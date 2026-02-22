@@ -1,95 +1,133 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>For My Love ❤️</title>
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial, sans-serif;
-}
-
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif;}
 body{
-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-background:linear-gradient(135deg,#ff4e50,#ff6a88);
-color:white;
-text-align:center;
-overflow:hidden;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#ff4e50,#ff6a88);
+  overflow:hidden;
+  color:white;
+  text-align:center;
 }
 
 /* Start Screen */
 #startScreen{
-position:fixed;
-width:100%;
-height:100%;
-background:black;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-z-index:9999;
+  position:fixed;
+  width:100%;
+  height:100%;
+  background:black;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
 }
-
 #startScreen button{
-padding:15px 30px;
-font-size:18px;
-border:none;
-border-radius:30px;
-background:#ff4e50;
-color:white;
-margin-top:20px;
-cursor:pointer;
+  padding:15px 30px;
+  font-size:18px;
+  border:none;
+  border-radius:30px;
+  background:#ff4e50;
+  color:white;
+  margin-top:20px;
+  cursor:pointer;
 }
 
 /* Proposal Box */
 .container{
-background:rgba(255,255,255,0.15);
-padding:30px;
-border-radius:20px;
-position:relative;
+  background:rgba(255,255,255,0.15);
+  padding:30px;
+  border-radius:20px;
+  position:relative;
+  z-index:1;
 }
 
 button{
-padding:10px 25px;
-border:none;
-border-radius:25px;
-margin:10px;
-font-size:16px;
-cursor:pointer;
-transition:0.3s;
+  padding:10px 25px;
+  border:none;
+  border-radius:25px;
+  margin:10px;
+  font-size:16px;
+  cursor:pointer;
+  transition:0.3s;
 }
 
 #yes{
-background:#00ff95;
-color:black;
-font-weight:bold;
+  background:#00ff95;
+  color:black;
+  font-weight:bold;
 }
-
-#yes:hover{
-transform:scale(1.1);
-}
-
+#yes:hover{transform:scale(1.1);}
 #no{
-background:#ff004c;
-color:white;
-position:absolute;
+  background:#ff004c;
+  color:white;
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
 }
 
+/* Celebration Text */
 #celebrate{
-display:none;
-font-size:22px;
-margin-top:20px;
+  display:none;
+  font-size:28px;
+  margin-top:20px;
+  animation:glow 1s infinite alternate;
+}
+@keyframes glow{
+  0%{text-shadow:0 0 10px #fff,0 0 20px #ff0,0 0 30px #f0f;}
+  100%{text-shadow:0 0 20px #ff0,0 0 30px #f0f,0 0 40px #fff;}
+}
+
+/* Floating hearts */
+.heart{
+  position:absolute;
+  width:20px;
+  height:20px;
+  background:red;
+  transform:rotate(45deg);
+  animation:fly 3s linear forwards;
+}
+.heart:before,.heart:after{
+  content:'';
+  position:absolute;
+  width:20px;
+  height:20px;
+  background:red;
+  border-radius:50%;
+}
+.heart:before{top:-10px;left:0;}
+.heart:after{left:10px;top:0;}
+@keyframes fly{
+  0%{opacity:1; transform:translate(0,0) rotate(45deg);}
+  100%{opacity:0; transform:translate(calc(-50px + 100px*var(--randX)),-300px) rotate(45deg);}
+}
+
+/* Confetti */
+.confetti{
+  position:absolute;
+  width:10px;
+  height:10px;
+  background:yellow;
+  top:0;
+  left:0;
+  opacity:0.8;
+  animation:drop 3s linear forwards;
+}
+@keyframes drop{
+  0%{transform:translate(0,0) rotate(0deg);}
+  100%{transform:translate(var(--randX,0px),500px) rotate(360deg);}
 }
 </style>
 </head>
-
 <body>
 
 <!-- Start Screen -->
@@ -101,52 +139,72 @@ margin-top:20px;
 <!-- Proposal -->
 <div class="container">
 <h2>Uqba 💖<br>Will You Be My Forever?</h2>
-
 <div id="buttons" style="position:relative;">
 <button id="yes">Yes 😍</button>
 <button id="no">No 🙄</button>
 </div>
-
 <div id="celebrate">
-💍 YAYYYYY ❤️ <br>
-You are mine forever 🥰✨<br><br>
-I love you endlessly 💖
+💍 YAYYYYY ❤️ <br>You are mine forever 🥰✨<br>I love you endlessly 💖
 </div>
 </div>
 
-<audio id="bgmusic" loop>
+<!-- Music -->
+<audio id="bgmusic" loop autoplay>
 <source src="love.mp3" type="audio/mpeg">
 </audio>
 
 <script>
-
-// Start music on tap
+// Start the proposal
 function startLove(){
-document.getElementById("bgmusic").play();
-document.getElementById("startScreen").style.display="none";
+    const music = document.getElementById("bgmusic");
+    music.play().catch(()=>console.log("Autoplay blocked, tap again!"));
+    document.getElementById("startScreen").style.display="none";
 }
 
-// No button moves
-let no=document.getElementById("no");
-let tries=0;
+// No button runs away
+let no = document.getElementById("no");
+no.addEventListener('mouseenter',()=>{
+    let maxX = window.innerWidth - no.offsetWidth;
+    let maxY = window.innerHeight - no.offsetHeight;
+    let x = Math.random()*maxX;
+    let y = Math.random()*maxY;
+    no.style.left = x + "px";
+    no.style.top = y + "px";
+});
 
-no.onclick=function(){
-tries++;
-if(tries<=3){
-let x=Math.random()*200-100;
-let y=Math.random()*200-100;
-no.style.transform=`translate(${x}px,${y}px)`;
-}else{
-alert("Single rehna hai kya 🥲");
-}
-}
-
-// Yes click
-document.getElementById("yes").onclick=function(){
-document.getElementById("buttons").style.display="none";
-document.getElementById("celebrate").style.display="block";
+// Yes button celebration
+document.getElementById("yes").onclick = function(){
+    document.getElementById("buttons").style.display="none";
+    document.getElementById("celebrate").style.display="block";
+    startHearts();
+    startConfetti();
 }
 
+// Floating hearts
+function startHearts(){
+    setInterval(()=>{
+        let heart = document.createElement('div');
+        heart.classList.add('heart');
+        heart.style.left = Math.random()*window.innerWidth + 'px';
+        heart.style.top = window.innerHeight + 'px';
+        heart.style.setProperty('--randX', Math.random());
+        document.body.appendChild(heart);
+        setTimeout(()=>heart.remove(),3000);
+    },150);
+}
+
+// Confetti/fireworks
+function startConfetti(){
+    for(let i=0;i<100;i++){
+        let conf = document.createElement('div');
+        conf.classList.add('confetti');
+        conf.style.left = Math.random()*window.innerWidth + 'px';
+        conf.style.background = `hsl(${Math.random()*360},100%,50%)`;
+        conf.style.setProperty('--randX', (Math.random()*800 - 400) + 'px');
+        document.body.appendChild(conf);
+        setTimeout(()=>conf.remove(),3000);
+    }
+}
 </script>
 
 </body>
