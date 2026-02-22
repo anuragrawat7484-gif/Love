@@ -1,129 +1,218 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Uqba ❤️</title>
+<title>For My Love ❤️</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
 
 <style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
 body{
-margin:0;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
 overflow:hidden;
-font-family:Arial;
+background:linear-gradient(-45deg,#ff416c,#ff4b2b,#ff6a88,#ff99ac);
+background-size:400% 400%;
+animation:bg 12s ease infinite;
+color:white;
 text-align:center;
-background:linear-gradient(135deg,#ff9a9e,#fad0c4);
+}
+
+@keyframes bg{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
 }
 
 .container{
-position:relative;
-top:30vh;
+background:rgba(255,255,255,0.1);
+padding:40px;
+border-radius:25px;
+backdrop-filter:blur(20px);
+box-shadow:0 0 40px rgba(255,255,255,0.3);
+width:90%;
+max-width:400px;
 }
 
-h1{color:white;font-size:40px;}
-p{color:white;font-size:22px;}
+h1{
+font-size:26px;
+margin-bottom:20px;
+text-shadow:0 0 15px white;
+}
 
 button{
 padding:12px 25px;
-font-size:18px;
 border:none;
 border-radius:30px;
-cursor:pointer;
 margin:10px;
+font-size:18px;
+cursor:pointer;
+transition:0.3s;
 }
 
-#yesBtn{background:red;color:white;}
-#noBtn{background:black;color:white;position:absolute;}
+#yes{
+background:#00ff9d;
+color:black;
+font-weight:bold;
+}
 
-.celebration{
-display:none;
-position:fixed;
-inset:0;
-background:linear-gradient(135deg,#ff4e50,#fc913a);
-justify-content:center;
-align-items:center;
-flex-direction:column;
+#yes:hover{
+transform:scale(1.1);
+box-shadow:0 0 25px #00ff9d;
+}
+
+#no{
+background:#ff004c;
 color:white;
+position:absolute;
 }
 
-.beat{
-font-size:80px;
-animation:beat 1s infinite;
+#celebrate{
+display:none;
+font-size:24px;
+animation:zoom 1s ease forwards;
 }
 
-@keyframes beat{
-0%,100%{transform:scale(1);}
-50%{transform:scale(1.3);}
+@keyframes zoom{
+from{transform:scale(0);}
+to{transform:scale(1);}
 }
 
 .heart{
-position:fixed;
-bottom:-10px;
+position:absolute;
 font-size:20px;
-animation:float 6s linear infinite;
+animation:float 5s linear infinite;
 }
 
 @keyframes float{
 0%{transform:translateY(0);opacity:1;}
 100%{transform:translateY(-100vh);opacity:0;}
 }
+
+.firework{
+position:absolute;
+width:5px;
+height:5px;
+background:white;
+border-radius:50%;
+animation:explode 1s ease-out forwards;
+}
+
+@keyframes explode{
+to{
+transform:translate(var(--x),var(--y));
+opacity:0;
+}
+}
+
+#countdown{
+font-size:22px;
+margin-top:10px;
+}
 </style>
 </head>
 
 <body>
 
-<audio id="music" autoplay loop>
-<source src="love.mp3" type="audio/mpeg">
+<div class="container" id="mainBox">
+<h1 id="typing"></h1>
+<div id="countdown"></div>
+
+<div id="buttons" style="display:none; position:relative;">
+<button id="yes">Yes 😍</button>
+<button id="no">No 🙄</button>
+</div>
+
+<div id="celebrate">
+💍 YAYYYYY ❤️ <br><br>
+You are mine forever 🥰✨<br>
+I love you endlessly 💖
+</div>
+</div>
+
+<audio autoplay loop>
+<source src="Piche Tere(KoshalWorld.Com).mp3" type="audio/mpeg">
 </audio>
 
-<div class="container" id="main">
-<h1>Uqba ❤️</h1>
-<p>Will you be my forever?</p>
-<button id="yesBtn">Yes 💍</button>
-<button id="noBtn">No 🥲</button>
-</div>
-
-<div class="celebration" id="celebrate">
-<h1>Yayyyyy ❤️</h1>
-<h2>I love you forever Uqba 😘💍</h2>
-<div class="beat">❤️</div>
-</div>
-
 <script>
-let noCount=0;
-const noBtn=document.getElementById("noBtn");
-const yesBtn=document.getElementById("yesBtn");
-const celebrate=document.getElementById("celebrate");
-const main=document.getElementById("main");
 
-document.body.addEventListener("click",()=>{
-document.getElementById("music").play().catch(()=>{});
-},{once:true});
+// Typing effect
+let text="Uqba 💖\nWill You Be My Forever?";
+let i=0;
+function type(){
+if(i<text.length){
+document.getElementById("typing").innerHTML+=text.charAt(i);
+i++;
+setTimeout(type,60);
+}
+}
+type();
 
-noBtn.addEventListener("click",function(){
-if(noCount<3){
-const x=Math.random()*(window.innerWidth-100);
-const y=Math.random()*(window.innerHeight-50);
-noBtn.style.left=x+"px";
-noBtn.style.top=y+"px";
-noCount++;
+// Countdown
+let count=3;
+let cd=document.getElementById("countdown");
+let interval=setInterval(()=>{
+cd.innerHTML="Proposal in "+count+"...";
+count--;
+if(count<0){
+clearInterval(interval);
+cd.innerHTML="";
+document.getElementById("buttons").style.display="block";
+}
+},1000);
+
+// No button run
+let no=document.getElementById("no");
+let tries=0;
+no.onclick=function(){
+tries++;
+if(tries<=3){
+let x=Math.random()*300-150;
+let y=Math.random()*300-150;
+no.style.transform=`translate(${x}px,${y}px)`;
 }else{
 alert("Single rehna hai kya 🥲");
 }
-});
-
-yesBtn.addEventListener("click",function(){
-main.style.display="none";
-celebrate.style.display="flex";
-
-for(let i=0;i<30;i++){
-let heart=document.createElement("div");
-heart.className="heart";
-heart.innerHTML="❤️";
-heart.style.left=Math.random()*100+"vw";
-heart.style.fontSize=(20+Math.random()*30)+"px";
-document.body.appendChild(heart);
-setTimeout(()=>heart.remove(),6000);
 }
-});
+
+// Yes click
+document.getElementById("yes").onclick=function(){
+document.getElementById("buttons").style.display="none";
+document.getElementById("celebrate").style.display="block";
+launchHearts();
+launchFireworks();
+}
+
+// Hearts
+function launchHearts(){
+for(let i=0;i<40;i++){
+let h=document.createElement("div");
+h.className="heart";
+h.innerHTML="❤️";
+h.style.left=Math.random()*100+"vw";
+h.style.animationDuration=(Math.random()*3+2)+"s";
+document.body.appendChild(h);
+}
+}
+
+// Fireworks
+function launchFireworks(){
+for(let i=0;i<100;i++){
+let f=document.createElement("div");
+f.className="firework";
+f.style.left="50%";
+f.style.top="50%";
+f.style.setProperty("--x",(Math.random()*400-200)+"px");
+f.style.setProperty("--y",(Math.random()*400-200)+"px");
+document.body.appendChild(f);
+}
+}
+
 </script>
 
 </body>
