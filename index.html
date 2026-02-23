@@ -4,18 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>For My Love ❤️</title>
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif;}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
 body{
   height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
-  background:linear-gradient(135deg,#ff4e50,#ff6a88);
+  background:linear-gradient(135deg,#ff4e50,#ff6a88,#ff99ac);
   overflow:hidden;
   color:white;
   text-align:center;
-  position:relative;
 }
 
 /* Start Screen */
@@ -30,8 +36,14 @@ body{
   align-items:center;
   z-index:9999;
 }
+
+#startScreen h2{
+  font-size:28px;
+  animation:pulse 1.5s infinite;
+}
+
 #startScreen button{
-  padding:15px 30px;
+  padding:15px 40px;
   font-size:18px;
   border:none;
   border-radius:30px;
@@ -41,17 +53,37 @@ body{
   cursor:pointer;
 }
 
-/* Proposal Box */
+@keyframes pulse{
+  0%{transform:scale(1);}
+  50%{transform:scale(1.1);}
+  100%{transform:scale(1);}
+}
+
+/* Glass Container */
 .container{
   background:rgba(255,255,255,0.15);
-  padding:30px;
-  border-radius:20px;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  padding:35px;
+  border-radius:25px;
+  width:90%;
+  max-width:400px;
   position:relative;
-  z-index:1;
+}
+
+h2{
+  margin-bottom:20px;
+  min-height:60px;
+}
+
+/* Buttons */
+#buttons{
+  position:relative;
+  height:120px;
 }
 
 button{
-  padding:10px 25px;
+  padding:12px 28px;
   border:none;
   border-radius:25px;
   margin:10px;
@@ -67,24 +99,27 @@ button{
   position:relative;
   z-index:2;
 }
+
 #no{
   background:#ff004c;
   color:white;
   position:absolute;
-  z-index:1;
-  transition:left 0.3s ease, top 0.3s ease;
+  left:50%;
+  top:60px;
+  transform:translateX(-50%);
 }
 
-/* Celebration Text */
+/* Celebration */
 #celebrate{
   display:none;
-  font-size:28px;
+  font-size:24px;
   margin-top:20px;
   animation:glow 1s infinite alternate;
 }
+
 @keyframes glow{
-  0%{text-shadow:0 0 10px #fff,0 0 20px #ff0,0 0 30px #f0f;}
-  100%{text-shadow:0 0 20px #ff0,0 0 30px #f0f,0 0 40px #fff;}
+  0%{text-shadow:0 0 10px #fff,0 0 20px #ff0;}
+  100%{text-shadow:0 0 25px #ff0,0 0 35px #f0f;}
 }
 
 /* Hearts */
@@ -96,6 +131,7 @@ button{
   transform:rotate(45deg);
   animation:fly 3s linear forwards;
 }
+
 .heart:before,.heart:after{
   content:'';
   position:absolute;
@@ -104,49 +140,55 @@ button{
   background:red;
   border-radius:50%;
 }
+
 .heart:before{top:-10px;left:0;}
 .heart:after{left:10px;top:0;}
+
 @keyframes fly{
   0%{opacity:1; transform:translate(0,0) rotate(45deg);}
-  100%{opacity:0; transform:translate(calc(-50px + 100px*var(--randX)),-300px) rotate(45deg);}
+  100%{opacity:0; transform:translate(calc(-50px + 100px*var(--randX)),-350px) rotate(45deg);}
 }
 
 /* Fireworks */
 .firework{
   position:absolute;
-  width:4px;
-  height:4px;
+  width:5px;
+  height:5px;
   border-radius:50%;
-  background:hsl(0,100%,50%);
-  pointer-events:none;
   animation:fw 1s linear forwards;
 }
+
 @keyframes fw{
   0%{opacity:1; transform:translate(0,0);}
-  100%{opacity:0; transform:translate(var(--dx,0px), var(--dy,-100px));}
+  100%{opacity:0; transform:translate(var(--dx),var(--dy));}
 }
 </style>
 </head>
+
 <body>
 
 <div id="startScreen">
-<h2>Tap to Start 💖</h2>
-<button id="startBtn">Start</button>
+  <h2>Tap to Start Our Love Story 💖</h2>
+  <button id="startBtn">Start</button>
 </div>
 
 <div class="container">
-<h2>Uqba 💖<br>Will You Be My Forever?</h2>
-<div id="buttons" style="position:relative;">
-<button id="yes">Yes 😍</button>
-<button id="no">No 🙄</button>
-</div>
-<div id="celebrate">
-💍 YAYYYYY ❤️ <br>You are mine forever 🥰✨<br>I love you endlessly 💖
-</div>
+  <h2 id="proposalText"></h2>
+
+  <div id="buttons">
+    <button id="yes">Yes 😍</button>
+    <button id="no">No 🙄</button>
+  </div>
+
+  <div id="celebrate">
+    💍 YAYYYYY ❤️ <br>
+    You are mine forever 🥰✨<br>
+    I love you endlessly 💖
+  </div>
 </div>
 
 <audio id="bgmusic" loop>
-<source src="love.mp3" type="audio/mpeg">
+  <source src="love.mp3" type="audio/mpeg">
 </audio>
 
 <script>
@@ -154,89 +196,100 @@ const music = document.getElementById("bgmusic");
 const startBtn = document.getElementById("startBtn");
 const noBtn = document.getElementById("no");
 const yesBtn = document.getElementById("yes");
+const container = document.querySelector('.container');
 let tries = 0;
 
-// Start button
-startBtn.addEventListener('click', ()=>{
-    music.play().catch(()=>console.log("Tap again to start music"));
-    document.getElementById("startScreen").style.display="none";
+/* Start Screen */
+startBtn.addEventListener("click", ()=>{
+  music.volume = 0.7;
+  music.play();
+  document.getElementById("startScreen").style.display="none";
 });
 
-// Move No button smoothly within screen, never leaving viewport
+/* Typing Effect */
+const text = "Uqba 💖\nWill You Be My Forever?";
+let index = 0;
+function typeEffect(){
+  if(index < text.length){
+    document.getElementById("proposalText").innerHTML += 
+      text.charAt(index) === "\n" ? "<br>" : text.charAt(index);
+    index++;
+    setTimeout(typeEffect,60);
+  }
+}
+typeEffect();
+
+/* Move No Button (Mobile Safe) */
 function moveNoButton(){
-    if(tries < 3){
-        tries++;
-        const btnWidth = noBtn.offsetWidth;
-        const btnHeight = noBtn.offsetHeight;
-        const yesRect = yesBtn.getBoundingClientRect();
-        const padding = 10;
+  if(tries < 4){
+    tries++;
 
-        // Safe random x/y
-        let x = Math.random() * (window.innerWidth - btnWidth - padding*2) + padding;
-        let y = Math.random() * (window.innerHeight - btnHeight - padding*2) + padding;
+    const rect = container.getBoundingClientRect();
+    const btnWidth = noBtn.offsetWidth;
+    const btnHeight = noBtn.offsetHeight;
 
-        // Avoid overlapping Yes button
-        if(x < yesRect.right && x + btnWidth > yesRect.left &&
-           y < yesRect.bottom && y + btnHeight > yesRect.top){
-            // move above or left of Yes
-            x = yesRect.left - btnWidth - padding;
-            if(x < padding) x = padding;
-            y = yesRect.top - btnHeight - padding;
-            if(y < padding) y = padding;
-        }
+    const maxX = rect.width - btnWidth - 20;
+    const maxY = rect.height - btnHeight - 20;
 
-        noBtn.style.left = x + "px";
-        noBtn.style.top = y + "px";
-    } else {
-        alert("Single rehna hai kya 🥲\nAb kya bche ki jaan legi? 🤨");
-    }
+    let x = Math.random() * maxX;
+    let y = Math.random() * maxY;
+
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+
+    yesBtn.style.transform = `scale(${1 + tries*0.2})`;
+
+  } else {
+    alert("Itna bhaav mat khao 😏❤️");
+  }
 }
 
-noBtn.addEventListener('touchstart', moveNoButton);
-noBtn.addEventListener('click', moveNoButton);
+noBtn.addEventListener("click", moveNoButton);
+noBtn.addEventListener("touchstart", moveNoButton);
 
-// Yes button triggers celebration
-yesBtn.addEventListener('click', ()=>{
-    document.getElementById("buttons").style.display="none";
-    document.getElementById("celebrate").style.display="block";
-    startHearts();
-    startFireworks();
+/* YES CLICK */
+yesBtn.addEventListener("click", ()=>{
+  document.getElementById("buttons").style.display="none";
+  document.getElementById("celebrate").style.display="block";
+  startHearts();
+  startFireworks();
 });
 
-// Floating hearts
+/* Hearts */
 function startHearts(){
-    setInterval(()=>{
-        let heart = document.createElement('div');
-        heart.classList.add('heart');
-        heart.style.left = Math.random()*window.innerWidth + 'px';
-        heart.style.top = window.innerHeight + 'px';
-        heart.style.setProperty('--randX', Math.random());
-        document.body.appendChild(heart);
-        setTimeout(()=>heart.remove(),3000);
-    },150);
+  setInterval(()=>{
+    let heart = document.createElement("div");
+    heart.classList.add("heart");
+    heart.style.left = Math.random()*window.innerWidth + "px";
+    heart.style.top = window.innerHeight + "px";
+    heart.style.setProperty('--randX', Math.random());
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),3000);
+  },150);
 }
 
-// Fireworks
+/* Fireworks */
 function startFireworks(){
-    const colors = ['#ff0','#f0f','#0ff','#0f0','#f00','#ff69b4'];
-    setInterval(()=>{
-        const x = Math.random() * window.innerWidth;
-        const y = Math.random() * window.innerHeight/2;
-        for(let i=0;i<20;i++){
-            const fw = document.createElement('div');
-            fw.classList.add('firework');
-            fw.style.left = x + 'px';
-            fw.style.top = y + 'px';
-            const angle = Math.random()*2*Math.PI;
-            const distance = Math.random()*100+50;
-            fw.style.setProperty('--dx', Math.cos(angle)*distance+'px');
-            fw.style.setProperty('--dy', Math.sin(angle)*distance+'px');
-            fw.style.background = colors[Math.floor(Math.random()*colors.length)];
-            document.body.appendChild(fw);
-            setTimeout(()=>fw.remove(),1000);
-        }
-    },500);
+  const colors=['#ff0','#f0f','#0ff','#0f0','#f00','#ff69b4'];
+  setInterval(()=>{
+    const x=Math.random()*window.innerWidth;
+    const y=Math.random()*window.innerHeight/2;
+    for(let i=0;i<20;i++){
+      const fw=document.createElement("div");
+      fw.classList.add("firework");
+      fw.style.left=x+"px";
+      fw.style.top=y+"px";
+      const angle=Math.random()*2*Math.PI;
+      const distance=Math.random()*100+50;
+      fw.style.setProperty('--dx',Math.cos(angle)*distance+'px');
+      fw.style.setProperty('--dy',Math.sin(angle)*distance+'px');
+      fw.style.background=colors[Math.floor(Math.random()*colors.length)];
+      document.body.appendChild(fw);
+      setTimeout(()=>fw.remove(),1000);
+    }
+  },500);
 }
 </script>
+
 </body>
 </html>
