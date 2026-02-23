@@ -15,6 +15,7 @@ body{
   overflow:hidden;
   color:white;
   text-align:center;
+  position:relative;
 }
 
 /* Start Screen */
@@ -71,6 +72,7 @@ button{
   color:white;
   position:absolute;
   z-index:1;
+  transition:left 0.3s ease, top 0.3s ease;
 }
 
 /* Celebration Text */
@@ -109,20 +111,19 @@ button{
   100%{opacity:0; transform:translate(calc(-50px + 100px*var(--randX)),-300px) rotate(45deg);}
 }
 
-/* Confetti */
-.confetti{
+/* Fireworks */
+.firework{
   position:absolute;
-  width:10px;
-  height:10px;
-  background:yellow;
-  top:0;
-  left:0;
-  opacity:0.8;
-  animation:drop 3s linear forwards;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:hsl(0,100%,50%);
+  pointer-events:none;
+  animation:fw 1s linear forwards;
 }
-@keyframes drop{
-  0%{transform:translate(0,0) rotate(0deg);}
-  100%{transform:translate(var(--randX,0px),500px) rotate(360deg);}
+@keyframes fw{
+  0%{opacity:1; transform:translate(0,0);}
+  100%{opacity:0; transform:translate(var(--dx,0px), var(--dy,-100px));}
 }
 </style>
 </head>
@@ -156,34 +157,33 @@ const yesBtn = document.getElementById("yes");
 let tries = 0;
 
 // Start button
-startBtn.addEventListener('click',()=>{
+startBtn.addEventListener('click', ()=>{
     music.play().catch(()=>console.log("Tap again to start music"));
     document.getElementById("startScreen").style.display="none";
 });
 
-// Move No button inside screen
+// Move No button smoothly within screen, never leaving viewport
 function moveNoButton(){
     if(tries < 3){
         tries++;
         const btnWidth = noBtn.offsetWidth;
         const btnHeight = noBtn.offsetHeight;
         const yesRect = yesBtn.getBoundingClientRect();
+        const padding = 10;
 
-        // Constrain within viewport
-        const maxX = window.innerWidth - btnWidth - 10; // 10px padding
-        const maxY = window.innerHeight - btnHeight - 10;
+        // Safe random x/y
+        let x = Math.random() * (window.innerWidth - btnWidth - padding*2) + padding;
+        let y = Math.random() * (window.innerHeight - btnHeight - padding*2) + padding;
 
-        let x, y;
-        let attempt = 0;
-        do {
-            x = Math.random() * maxX;
-            y = Math.random() * maxY;
-            attempt++;
-        } while(
-            x < yesRect.right && x + btnWidth > yesRect.left &&
-            y < yesRect.bottom && y + btnHeight > yesRect.top &&
-            attempt < 50 // avoid infinite loop
-        );
+        // Avoid overlapping Yes button
+        if(x < yesRect.right && x + btnWidth > yesRect.left &&
+           y < yesRect.bottom && y + btnHeight > yesRect.top){
+            // move above or left of Yes
+            x = yesRect.left - btnWidth - padding;
+            if(x < padding) x = padding;
+            y = yesRect.top - btnHeight - padding;
+            if(y < padding) y = padding;
+        }
 
         noBtn.style.left = x + "px";
         noBtn.style.top = y + "px";
@@ -192,19 +192,18 @@ function moveNoButton(){
     }
 }
 
-// Mobile-friendly events
 noBtn.addEventListener('touchstart', moveNoButton);
 noBtn.addEventListener('click', moveNoButton);
 
-// Yes button celebration
+// Yes button triggers celebration
 yesBtn.addEventListener('click', ()=>{
     document.getElementById("buttons").style.display="none";
     document.getElementById("celebrate").style.display="block";
     startHearts();
-    startConfetti();
+    startFireworks();
 });
 
-// Hearts
+// Floating hearts
 function startHearts(){
     setInterval(()=>{
         let heart = document.createElement('div');
@@ -217,17 +216,26 @@ function startHearts(){
     },150);
 }
 
-// Confetti
-function startConfetti(){
-    for(let i=0;i<100;i++){
-        let conf = document.createElement('div');
-        conf.classList.add('confetti');
-        conf.style.left = Math.random()*window.innerWidth + 'px';
-        conf.style.background = `hsl(${Math.random()*360},100%,50%)`;
-        conf.style.setProperty('--randX', (Math.random()*800 - 400) + 'px');
-        document.body.appendChild(conf);
-        setTimeout(()=>conf.remove(),3000);
-    }
+// Fireworks
+function startFireworks(){
+    const colors = ['#ff0','#f0f','#0ff','#0f0','#f00','#ff69b4'];
+    setInterval(()=>{
+        const x = Math.random() * window.innerWidth;
+        const y = Math.random() * window.innerHeight/2;
+        for(let i=0;i<20;i++){
+            const fw = document.createElement('div');
+            fw.classList.add('firework');
+            fw.style.left = x + 'px';
+            fw.style.top = y + 'px';
+            const angle = Math.random()*2*Math.PI;
+            const distance = Math.random()*100+50;
+            fw.style.setProperty('--dx', Math.cos(angle)*distance+'px');
+            fw.style.setProperty('--dy', Math.sin(angle)*distance+'px');
+            fw.style.background = colors[Math.floor(Math.random()*colors.length)];
+            document.body.appendChild(fw);
+            setTimeout(()=>fw.remove(),1000);
+        }
+    },500);
 }
 </script>
 </body>
