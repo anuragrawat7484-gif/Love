@@ -10,7 +10,7 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family: 'Segoe UI', sans-serif;
+  font-family:'Segoe UI', sans-serif;
 }
 
 body{
@@ -37,11 +37,6 @@ body{
   z-index:9999;
 }
 
-#startScreen h2{
-  font-size:28px;
-  animation:pulse 1.5s infinite;
-}
-
 #startScreen button{
   padding:15px 40px;
   font-size:18px;
@@ -49,26 +44,19 @@ body{
   border-radius:30px;
   background:#ff4e50;
   color:white;
-  margin-top:20px;
   cursor:pointer;
 }
 
-@keyframes pulse{
-  0%{transform:scale(1);}
-  50%{transform:scale(1.1);}
-  100%{transform:scale(1);}
-}
-
-/* Glass Container */
+/* Container */
 .container{
   background:rgba(255,255,255,0.15);
   backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
   padding:35px;
   border-radius:25px;
   width:90%;
   max-width:400px;
   position:relative;
+  overflow:hidden;
 }
 
 h2{
@@ -79,14 +67,13 @@ h2{
 /* Buttons */
 #buttons{
   position:relative;
-  height:120px;
+  height:140px;
 }
 
 button{
   padding:12px 28px;
   border:none;
   border-radius:25px;
-  margin:10px;
   font-size:16px;
   cursor:pointer;
   transition:0.3s;
@@ -96,17 +83,17 @@ button{
   background:#00ff95;
   color:black;
   font-weight:bold;
-  position:relative;
-  z-index:2;
+  position:absolute;
+  left:30%;
+  top:60px;
 }
 
 #no{
   background:#ff004c;
   color:white;
   position:absolute;
-  left:50%;
+  left:60%;
   top:60px;
-  transform:translateX(-50%);
 }
 
 /* Celebration */
@@ -131,7 +118,6 @@ button{
   transform:rotate(45deg);
   animation:fly 3s linear forwards;
 }
-
 .heart:before,.heart:after{
   content:'';
   position:absolute;
@@ -140,9 +126,8 @@ button{
   background:red;
   border-radius:50%;
 }
-
-.heart:before{top:-10px;left:0;}
-.heart:after{left:10px;top:0;}
+.heart:before{top:-10px;}
+.heart:after{left:10px;}
 
 @keyframes fly{
   0%{opacity:1; transform:translate(0,0) rotate(45deg);}
@@ -157,7 +142,6 @@ button{
   border-radius:50%;
   animation:fw 1s linear forwards;
 }
-
 @keyframes fw{
   0%{opacity:1; transform:translate(0,0);}
   100%{opacity:0; transform:translate(var(--dx),var(--dy));}
@@ -187,22 +171,23 @@ button{
   </div>
 </div>
 
-<audio id="bgmusic" loop>
-  <source src="love.mp3" type="audio/mpeg">
-</audio>
+<audio id="bgmusic" src="love.mp3" loop preload="auto"></audio>
 
 <script>
 const music = document.getElementById("bgmusic");
 const startBtn = document.getElementById("startBtn");
 const noBtn = document.getElementById("no");
 const yesBtn = document.getElementById("yes");
-const container = document.querySelector('.container');
+const container = document.querySelector(".container");
+
 let tries = 0;
 
-/* Start Screen */
-startBtn.addEventListener("click", ()=>{
-  music.volume = 0.7;
-  music.play();
+/* Start */
+startBtn.addEventListener("click", async ()=>{
+  try{
+    music.volume = 0.8;
+    await music.play();
+  }catch(e){}
   document.getElementById("startScreen").style.display="none";
 });
 
@@ -212,36 +197,41 @@ let index = 0;
 function typeEffect(){
   if(index < text.length){
     document.getElementById("proposalText").innerHTML += 
-      text.charAt(index) === "\n" ? "<br>" : text.charAt(index);
+    text.charAt(index)==="\n" ? "<br>" : text.charAt(index);
     index++;
     setTimeout(typeEffect,60);
   }
 }
 typeEffect();
 
-/* Move No Button (Mobile Safe) */
+/* No Button Move + Shrink */
 function moveNoButton(){
-  if(tries < 4){
-    tries++;
 
-    const rect = container.getBoundingClientRect();
-    const btnWidth = noBtn.offsetWidth;
-    const btnHeight = noBtn.offsetHeight;
+  const rect = container.getBoundingClientRect();
+  const btnWidth = noBtn.offsetWidth;
+  const btnHeight = noBtn.offsetHeight;
 
-    const maxX = rect.width - btnWidth - 20;
-    const maxY = rect.height - btnHeight - 20;
+  const padding = 20;
 
-    let x = Math.random() * maxX;
-    let y = Math.random() * maxY;
+  const maxX = rect.width - btnWidth - padding;
+  const maxY = rect.height - btnHeight - padding;
 
-    noBtn.style.left = x + "px";
-    noBtn.style.top = y + "px";
+  const x = Math.random() * maxX;
+  const y = Math.random() * maxY;
 
-    yesBtn.style.transform = `scale(${1 + tries*0.2})`;
+  noBtn.style.left = x + "px";
+  noBtn.style.top = y + "px";
 
-  } else {
-    alert("Itna bhaav mat khao 😏❤️");
-  }
+  tries++;
+
+  /* Shrink NO */
+  noBtn.style.transform = `scale(${1 - tries*0.1})`;
+
+  /* Grow YES */
+  yesBtn.style.transform = `scale(${1 + tries*0.15})`;
+
+  /* YES chases NO slightly */
+  yesBtn.style.left = (x - 50) + "px";
 }
 
 noBtn.addEventListener("click", moveNoButton);
@@ -258,11 +248,11 @@ yesBtn.addEventListener("click", ()=>{
 /* Hearts */
 function startHearts(){
   setInterval(()=>{
-    let heart = document.createElement("div");
+    let heart=document.createElement("div");
     heart.classList.add("heart");
-    heart.style.left = Math.random()*window.innerWidth + "px";
-    heart.style.top = window.innerHeight + "px";
-    heart.style.setProperty('--randX', Math.random());
+    heart.style.left=Math.random()*window.innerWidth+"px";
+    heart.style.top=window.innerHeight+"px";
+    heart.style.setProperty('--randX',Math.random());
     document.body.appendChild(heart);
     setTimeout(()=>heart.remove(),3000);
   },150);
