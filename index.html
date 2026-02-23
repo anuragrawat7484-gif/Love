@@ -64,13 +64,13 @@ button{
   color:black;
   font-weight:bold;
   position:relative;
-  z-index:2; /* keep Yes on top */
+  z-index:2;
 }
 #no{
   background:#ff004c;
   color:white;
   position:absolute;
-  z-index:1; /* behind Yes */
+  z-index:1;
 }
 
 /* Celebration Text */
@@ -85,7 +85,7 @@ button{
   100%{text-shadow:0 0 20px #ff0,0 0 30px #f0f,0 0 40px #fff;}
 }
 
-/* Floating hearts */
+/* Hearts */
 .heart{
   position:absolute;
   width:20px;
@@ -128,13 +128,11 @@ button{
 </head>
 <body>
 
-<!-- Start Screen -->
 <div id="startScreen">
 <h2>Tap to Start 💖</h2>
 <button id="startBtn">Start</button>
 </div>
 
-<!-- Proposal -->
 <div class="container">
 <h2>Uqba 💖<br>Will You Be My Forever?</h2>
 <div id="buttons" style="position:relative;">
@@ -146,7 +144,6 @@ button{
 </div>
 </div>
 
-<!-- Music -->
 <audio id="bgmusic" loop>
 <source src="love.mp3" type="audio/mpeg">
 </audio>
@@ -164,7 +161,7 @@ startBtn.addEventListener('click',()=>{
     document.getElementById("startScreen").style.display="none";
 });
 
-// Move No button, mobile-friendly & within screen
+// Move No button inside screen
 function moveNoButton(){
     if(tries < 3){
         tries++;
@@ -172,18 +169,20 @@ function moveNoButton(){
         const btnHeight = noBtn.offsetHeight;
         const yesRect = yesBtn.getBoundingClientRect();
 
-        // Constrain position inside viewport
-        const maxX = window.innerWidth - btnWidth;
-        const maxY = window.innerHeight - btnHeight;
+        // Constrain within viewport
+        const maxX = window.innerWidth - btnWidth - 10; // 10px padding
+        const maxY = window.innerHeight - btnHeight - 10;
 
         let x, y;
+        let attempt = 0;
         do {
             x = Math.random() * maxX;
             y = Math.random() * maxY;
+            attempt++;
         } while(
-            // avoid overlapping Yes
             x < yesRect.right && x + btnWidth > yesRect.left &&
-            y < yesRect.bottom && y + btnHeight > yesRect.top
+            y < yesRect.bottom && y + btnHeight > yesRect.top &&
+            attempt < 50 // avoid infinite loop
         );
 
         noBtn.style.left = x + "px";
@@ -218,7 +217,7 @@ function startHearts(){
     },150);
 }
 
-// Confetti/fireworks
+// Confetti
 function startConfetti(){
     for(let i=0;i<100;i++){
         let conf = document.createElement('div');
